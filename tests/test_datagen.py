@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 
 import polars as pl
-from tests.conftest import RUN_DATE
 
 from lakekeeper.datagen import generate_landing_files
+from tests.conftest import RUN_DATE
 
 
 def test_generates_four_landing_files(landing_dir: Path) -> None:

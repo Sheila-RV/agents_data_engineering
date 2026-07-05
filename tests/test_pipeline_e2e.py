@@ -3,12 +3,12 @@
 from pathlib import Path
 
 import pytest
-from tests.conftest import RUN_DATE
 
 from lakekeeper.config import Settings
 from lakekeeper.pipeline import bronze
 from lakekeeper.pipeline.runner import run_deterministic
 from lakekeeper.pipeline.store import TableStore
+from tests.conftest import RUN_DATE
 
 
 @pytest.fixture()

@@ -4,11 +4,11 @@ import json
 from pathlib import Path
 
 import pytest
-from tests.conftest import RUN_DATE
 
 from lakekeeper.agents.graph import HAPPY_PATH, run_with_agents
 from lakekeeper.config import Settings
 from lakekeeper.pipeline.store import TableStore
+from tests.conftest import RUN_DATE
 
 
 @pytest.fixture()

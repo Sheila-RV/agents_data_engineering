@@ -5,12 +5,12 @@ from pathlib import Path
 
 import polars as pl
 import pytest
-from tests.conftest import RUN_DATE
 
 from lakekeeper.agents.graph import run_with_agents
 from lakekeeper.config import Settings
 from lakekeeper.datagen import generate_landing_files
 from lakekeeper.pipeline.store import TableStore
+from tests.conftest import RUN_DATE
 
 
 @pytest.fixture()
