@@ -69,13 +69,34 @@ def run(
     no_agents: bool = typer.Option(
         False, "--no-agents", help="Run the deterministic pipeline without the agent layer."
     ),
+    live: bool = typer.Option(
+        False,
+        "--live",
+        help="Require live Claude agents (errors if no ANTHROPIC_API_KEY is configured).",
+    ),
 ) -> None:
-    """Run the bronze -> silver -> gold pipeline for one business date."""
-    from lakekeeper.pipeline.runner import run_deterministic
+    """Run the bronze -> silver -> gold pipeline for one business date.
 
+    By default the LangGraph agent layer operates the run; without an API key
+    it uses deterministic mock policies, so this always works out of the box.
+    """
     settings = get_settings()
     if not no_agents:
-        console.print("[yellow]agent layer not built yet — running deterministic pipeline[/yellow]")
+        from lakekeeper.agents.graph import run_with_agents
+
+        if live and settings.mock_llm:
+            console.print(
+                "[red]--live requires ANTHROPIC_API_KEY (and LAKEKEEPER_MOCK_LLM != 1)[/red]"
+            )
+            raise typer.Exit(1)
+        final = run_with_agents(settings, date.fromisoformat(run_date), console)
+        status = final.get("status")
+        color = "green" if status == "done" else "red"
+        console.print(f"[bold]run {final['run_id']} finished: [{color}]{status}[/{color}][/bold]")
+        return
+
+    from lakekeeper.pipeline.runner import run_deterministic
+
     summary = run_deterministic(settings, date.fromisoformat(run_date))
     console.print(f"[bold]run_id[/bold] = {summary.run_id}")
     for r in summary.ingested:
@@ -110,12 +131,16 @@ def report(run_date: str = DateOpt) -> None:
 
 
 @app.command()
-def demo(seed: int = SeedOpt, chaos: str = ChaosOpt) -> None:
-    """One-shot demo: generate data, run the pipeline, show the KPIs."""
+def demo(
+    seed: int = SeedOpt,
+    chaos: str = ChaosOpt,
+    no_agents: bool = typer.Option(False, "--no-agents", help="Skip the agent layer."),
+) -> None:
+    """One-shot demo: generate data, run the agent-operated pipeline, show the KPIs."""
     run_date = "2026-07-01"
     console.rule("[bold]1. generate landing data")
     generate(run_date, seed, chaos, 500, 5000)
-    console.rule("[bold]2. run pipeline")
-    run(run_date, no_agents=True)
+    console.rule("[bold]2. run pipeline (agent-operated)")
+    run(run_date, no_agents=no_agents, live=False)
     console.rule("[bold]3. gold KPIs")
     report(run_date)
