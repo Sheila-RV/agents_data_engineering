@@ -1,0 +1,40 @@
+# Data-quality expectations for silver.transactions
+table: silver.transactions
+key: txn_id
+rules:
+  - id: txn_id_not_null
+    type: not_null
+    column: txn_id
+    severity: error
+  - id: txn_id_unique
+    type: unique
+    column: txn_id
+    severity: error
+  - id: amount_not_null
+    type: not_null
+    column: amount
+    severity: error
+  - id: amount_positive
+    type: fail_when
+    expr: "amount <= 0"
+    severity: error
+  - id: currency_allowed
+    type: allowed_values
+    column: currency
+    values: [BOB, USD, EUR]
+    severity: error
+  - id: account_exists
+    type: foreign_key
+    column: account_id
+    ref: silver.accounts
+    ref_column: account_id
+    severity: error
+  - id: channel_allowed
+    type: allowed_values
+    column: channel
+    values: [ATM, POS, web, branch]
+    severity: warn
+  - id: late_arrivals
+    type: fail_when
+    expr: "is_late"
+    severity: warn

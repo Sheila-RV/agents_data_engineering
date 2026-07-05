@@ -1,0 +1,28 @@
+# Data-quality expectations for silver.accounts
+table: silver.accounts
+key: account_id
+rules:
+  - id: account_id_not_null
+    type: not_null
+    column: account_id
+    severity: error
+  - id: account_id_unique
+    type: unique
+    column: account_id
+    severity: error
+  - id: customer_exists
+    type: foreign_key
+    column: customer_id
+    ref: silver.customers
+    ref_column: customer_id
+    severity: error
+  - id: status_allowed
+    type: allowed_values
+    column: status
+    values: [active, dormant, closed]
+    severity: warn
+  - id: currency_allowed
+    type: allowed_values
+    column: currency
+    values: [BOB, USD]
+    severity: warn

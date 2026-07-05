@@ -28,6 +28,11 @@ def test_end_to_end_run(settings: Settings) -> None:
     }
     assert not any(r.has_drift for r in summary.ingested)
 
+    # Clean data: every DQ report passes, nothing quarantined, recon is green.
+    assert all(r.passed for r in summary.dq_reports)
+    assert all(t.quarantined == 0 for t in summary.transformed)
+    assert summary.reconciliation is not None and summary.reconciliation.ok
+
     txns = store.read("silver", "transactions")
     assert txns.height == 200
     assert txns["txn_id"].n_unique() == 200
@@ -38,10 +43,24 @@ def test_end_to_end_run(settings: Settings) -> None:
         ratio = (usd["amount_bob"] / usd["amount"]).round(2)
         assert set(ratio.unique()) == {6.96}
 
+    # Full star schema materialized.
+    assert set(summary.gold_models) == {
+        "dim_account",
+        "dim_customer",
+        "dim_date",
+        "fact_transactions",
+        "kpi_daily",
+    }
+    fact = store.read("gold", "fact_transactions")
+    assert fact.height == 200
+    assert fact["customer_id"].null_count() == 0
+    assert store.read("gold", "dim_date").height >= 1
+
     kpi = store.read("gold", "kpi_daily")
     assert kpi.height == 1
     assert kpi["txn_count"][0] == 200
     assert kpi["volume_bob"][0] > 0
+    assert kpi["quarantine_rate_pct"][0] == 0.0
 
 
 def test_rerun_is_idempotent(settings: Settings) -> None:
@@ -51,6 +70,32 @@ def test_rerun_is_idempotent(settings: Settings) -> None:
     assert store.read("bronze", "transactions").height == 400
     assert store.read("silver", "transactions").height == 200
     assert store.read("gold", "kpi_daily")["txn_count"][0] == 200
+
+
+def test_bad_rows_are_quarantined(settings: Settings, landing_dir: Path) -> None:
+    # Corrupt the drop: a transaction with a negative amount and one on an
+    # account that does not exist.
+    txn_file = landing_dir / "transactions_20260701.jsonl"
+    good_line = txn_file.read_text(encoding="utf-8").splitlines()[0]
+    import json
+
+    bad_neg = json.loads(good_line)
+    bad_neg.update(txn_id="TXN-BAD-NEG", amount=-50.0)
+    bad_orphan = json.loads(good_line)
+    bad_orphan.update(txn_id="TXN-BAD-ORPHAN", account_id="ACC-999999")
+    with txn_file.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(bad_neg) + "\n")
+        f.write(json.dumps(bad_orphan) + "\n")
+
+    summary = run_deterministic(settings, RUN_DATE)
+    store = TableStore(settings.lake_dir)
+
+    quarantined = store.read("quarantine", "transactions")
+    reasons = dict(quarantined.select("txn_id", "_reject_reason").iter_rows())
+    assert reasons["TXN-BAD-NEG"] == "amount_positive"
+    assert reasons["TXN-BAD-ORPHAN"] == "account_exists"
+    assert store.read("silver", "transactions").height == 200  # clean rows only
+    assert summary.reconciliation is not None and summary.reconciliation.ok
 
 
 def test_schema_drift_detected(settings: Settings, landing_dir: Path) -> None:

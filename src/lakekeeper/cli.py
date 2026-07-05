@@ -81,9 +81,23 @@ def run(
     for r in summary.ingested:
         console.print(f"  bronze [cyan]{r.table:<13}[/cyan] +{r.rows} rows  ({r.file})")
     for t in summary.transformed:
-        console.print(f"  silver [cyan]{t.table:<13}[/cyan] {t.rows_in} -> {t.rows_out} rows")
+        line = f"  silver [cyan]{t.table:<13}[/cyan] {t.rows_in} -> {t.rows_out} rows"
+        if t.quarantined:
+            line += f"  [red]({t.quarantined} quarantined)[/red]"
+        console.print(line)
+    for report in summary.dq_reports:
+        for r in report.error_failures + report.warn_failures:
+            color = "red" if r.severity == "error" else "yellow"
+            console.print(
+                f"    dq [{color}]{r.severity}[/{color}] {report.table}: "
+                f"{r.rule_id} failed on {r.failed_rows}/{r.total_rows} rows"
+            )
     for model, rows in summary.gold_models.items():
         console.print(f"  gold   [cyan]{model:<13}[/cyan] {rows} rows")
+    if summary.reconciliation:
+        for check in summary.reconciliation.checks:
+            mark = "[green]ok[/green]" if check.ok else "[red]MISMATCH[/red]"
+            console.print(f"  recon  {check.name:<28} {mark}  {check.detail}")
 
 
 @app.command()

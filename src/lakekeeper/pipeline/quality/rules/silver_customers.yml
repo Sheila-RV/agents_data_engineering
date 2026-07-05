@@ -1,0 +1,30 @@
+# Data-quality expectations for silver.customers
+table: silver.customers
+key: customer_id
+rules:
+  - id: customer_id_not_null
+    type: not_null
+    column: customer_id
+    severity: error
+  - id: customer_id_unique
+    type: unique
+    column: customer_id
+    severity: error
+  - id: doc_id_not_null
+    type: not_null
+    column: doc_id
+    severity: error
+  - id: birth_date_not_null
+    type: not_null
+    column: birth_date
+    severity: error
+  - id: segment_allowed
+    type: allowed_values
+    column: segment
+    values: [retail, premium, business]
+    severity: warn
+  - id: risk_rating_allowed
+    type: allowed_values
+    column: risk_rating
+    values: [low, medium, high]
+    severity: warn
