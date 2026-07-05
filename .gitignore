@@ -1,0 +1,25 @@
+# Environment / secrets
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Data lake (generated at runtime; samples/ IS committed)
+data/landing/
+data/lake/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

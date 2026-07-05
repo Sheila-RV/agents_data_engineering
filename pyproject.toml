@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lakekeeper"
+version = "0.1.0"
+description = "Multi-agent system that operates an end-to-end medallion lakehouse (bronze/silver/gold) over synthetic core-banking data"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Sheila Rojas", email = "shei.rv121@gmail.com" }]
+requires-python = ">=3.11"
+keywords = ["data-engineering", "medallion-architecture", "langgraph", "delta-lake", "multi-agent"]
+dependencies = [
+    "langgraph>=0.6,<2.0",
+    "langchain-anthropic>=0.3",
+    "langchain-core>=0.3",
+    "anthropic>=0.60",
+    "polars>=1.20",
+    "deltalake>=1.0",
+    "pyarrow>=17",
+    "duckdb>=1.2",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "faker>=30",
+    "numpy>=2.0",
+    "typer>=0.15",
+    "rich>=13",
+    "pyyaml>=6",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "pytest-cov",
+    "ruff>=0.8",
+]
+
+[project.scripts]
+lakekeeper = "lakekeeper.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+lakekeeper = ["pipeline/sql/*.sql", "pipeline/quality/rules/*.yml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # bugbear
+    "UP",  # pyupgrade
+    "SIM", # simplify
+    "PTH", # use pathlib
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "live: tests that call the real Anthropic API (deselected by default; require ANTHROPIC_API_KEY)",
+]

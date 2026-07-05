@@ -1,0 +1,107 @@
+"""Lakekeeper command-line interface."""
+
+from datetime import date
+
+import polars as pl
+import typer
+from rich.console import Console
+from rich.table import Table
+
+from lakekeeper import __version__
+from lakekeeper.config import get_settings
+
+app = typer.Typer(
+    name="lakekeeper",
+    help="Multi-agent operated medallion lakehouse over synthetic banking data.",
+    no_args_is_help=True,
+)
+console = Console()
+
+DateOpt = typer.Option("2026-07-01", "--date", "-d", help="Business date (YYYY-MM-DD).")
+SeedOpt = typer.Option(42, "--seed", help="Random seed (fixed seed = reproducible data).")
+ChaosOpt = typer.Option(
+    "none", "--chaos", help="Data-quality chaos profile to inject: none | low | high."
+)
+
+
+def _print_frame(title: str, df: pl.DataFrame) -> None:
+    table = Table(title=title)
+    for col in df.columns:
+        table.add_column(col, justify="right" if df[col].dtype.is_numeric() else "left")
+    for row in df.iter_rows():
+        table.add_row(*[str(v) for v in row])
+    console.print(table)
+
+
+@app.command()
+def version() -> None:
+    """Print the Lakekeeper version."""
+    console.print(f"lakekeeper [bold cyan]{__version__}[/bold cyan]")
+
+
+@app.command()
+def generate(
+    run_date: str = DateOpt,
+    seed: int = SeedOpt,
+    chaos: str = ChaosOpt,
+    customers: int = typer.Option(500, help="Number of customers to generate."),
+    transactions: int = typer.Option(5000, help="Number of transactions to generate."),
+) -> None:
+    """Generate one business date's synthetic landing files."""
+    from lakekeeper.datagen import generate_landing_files
+
+    settings = get_settings()
+    paths = generate_landing_files(
+        date.fromisoformat(run_date),
+        settings.landing_dir,
+        seed=seed,
+        chaos=chaos,
+        n_customers=customers,
+        n_transactions=transactions,
+    )
+    for p in paths:
+        console.print(f"  [green]wrote[/green] {p}")
+
+
+@app.command()
+def run(
+    run_date: str = DateOpt,
+    no_agents: bool = typer.Option(
+        False, "--no-agents", help="Run the deterministic pipeline without the agent layer."
+    ),
+) -> None:
+    """Run the bronze -> silver -> gold pipeline for one business date."""
+    from lakekeeper.pipeline.runner import run_deterministic
+
+    settings = get_settings()
+    if not no_agents:
+        console.print("[yellow]agent layer not built yet — running deterministic pipeline[/yellow]")
+    summary = run_deterministic(settings, date.fromisoformat(run_date))
+    console.print(f"[bold]run_id[/bold] = {summary.run_id}")
+    for r in summary.ingested:
+        console.print(f"  bronze [cyan]{r.table:<13}[/cyan] +{r.rows} rows  ({r.file})")
+    for t in summary.transformed:
+        console.print(f"  silver [cyan]{t.table:<13}[/cyan] {t.rows_in} -> {t.rows_out} rows")
+    for model, rows in summary.gold_models.items():
+        console.print(f"  gold   [cyan]{model:<13}[/cyan] {rows} rows")
+
+
+@app.command()
+def report(run_date: str = DateOpt) -> None:
+    """Show the gold KPI mart."""
+    from lakekeeper.pipeline.store import TableStore
+
+    store = TableStore(get_settings().lake_dir)
+    _print_frame("gold.kpi_daily", store.read("gold", "kpi_daily"))
+
+
+@app.command()
+def demo(seed: int = SeedOpt, chaos: str = ChaosOpt) -> None:
+    """One-shot demo: generate data, run the pipeline, show the KPIs."""
+    run_date = "2026-07-01"
+    console.rule("[bold]1. generate landing data")
+    generate(run_date, seed, chaos, 500, 5000)
+    console.rule("[bold]2. run pipeline")
+    run(run_date, no_agents=True)
+    console.rule("[bold]3. gold KPIs")
+    report(run_date)
