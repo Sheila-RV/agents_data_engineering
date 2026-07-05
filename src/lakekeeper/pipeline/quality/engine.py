@@ -1,7 +1,7 @@
 """Declarative data-quality engine.
 
 Rules live in YAML files (one per table, see rules/) and are evaluated
-deterministically with Polars — the LLM never invents checks, it only reasons
+deterministically with Polars - the LLM never invents checks, it only reasons
 over the structured `DQReport` this engine produces and picks an action
 (quarantine / warn / block) per finding.
 
@@ -14,7 +14,7 @@ Rule types:
 - fail_when:       SQL expression; rows where it is TRUE fail (e.g. "amount <= 0")
 
 On Databricks the same specs map to Lakeflow pipeline expectations
-(@dlt.expect_or_drop) — see docs/databricks_mapping.md.
+(@dlt.expect_or_drop) - see docs/databricks_mapping.md.
 """
 
 import functools
@@ -167,7 +167,7 @@ def quarantine_failures(
     """Move rows that violate error-severity rules out of `<layer>.<table>` into
     `quarantine.<table>` (tagged with the violated rule ids). Returns rows moved.
 
-    `rule_ids` limits the action to specific rules — that is the lever the
+    `rule_ids` limits the action to specific rules - that is the lever the
     data-quality agent pulls; the default policy quarantines all error failures.
     """
     df = store.read(layer, table)

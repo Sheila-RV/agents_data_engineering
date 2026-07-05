@@ -20,7 +20,7 @@ class PipelineRunState(TypedDict, total=False):
     # "running" | "aborted" | "done"
     status: str
 
-    # Retry budget for failed steps — decremented in code, never by the LLM.
+    # Retry budget for failed steps - decremented in code, never by the LLM.
     retries_remaining: int
     # Set by a worker when its step blows up; consumed by the supervisor.
     pending_failure: dict[str, Any] | None

@@ -1,7 +1,7 @@
 """Bronze layer: raw, append-only ingestion from the landing zone.
 
 Everything lands as strings, exactly as delivered, plus lineage metadata columns
-(`_ingested_at`, `_source_file`, `_run_id`). Nothing is cleaned here — that is
+(`_ingested_at`, `_source_file`, `_run_id`). Nothing is cleaned here - that is
 silver's job. The one thing bronze *does* check is the schema contract: files
 whose columns deviate raise `SchemaDriftError`, and it is the ingestion agent's
 call (in agent runs) whether to skip the file or ingest it aligned to contract.

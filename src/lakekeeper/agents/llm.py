@@ -1,5 +1,5 @@
 """LLM access: live Claude decider, deterministic mock decider, and a hard
-per-run call budget (the cost guard — enforced in code, never by the model).
+per-run call budget (the cost guard - enforced in code, never by the model).
 
 Mock mode is the out-of-the-box default when no ANTHROPIC_API_KEY is set, so
 the whole system runs (and is tested in CI) without any API access.
@@ -68,7 +68,7 @@ class MockDecider:
             return DriftDecision(
                 action="ingest_aligned",
                 rationale=(
-                    "mock policy: ingest aligned to contract — missing columns become "
+                    "mock policy: ingest aligned to contract - missing columns become "
                     "nulls that downstream DQ rules catch; bronze keeps raw lineage"
                 ),
             )

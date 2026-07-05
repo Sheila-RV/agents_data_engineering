@@ -25,7 +25,7 @@ PROFILES = ("none", "low", "high")
 
 
 def _pick(rng: np.random.Generator, n: int, rate: float) -> np.ndarray:
-    """Boolean mask selecting exactly max(1, rate*n) rows — deterministic counts."""
+    """Boolean mask selecting exactly max(1, rate*n) rows - deterministic counts."""
     k = max(1, int(rate * n))
     mask = np.zeros(n, dtype=bool)
     mask[rng.choice(n, size=min(k, n), replace=False)] = True

@@ -3,7 +3,7 @@
 All transforms are pure Polars over bronze inputs and are idempotent: re-running
 a date produces the same silver state (dedupe keeps the latest ingested copy,
 writes are MERGE upserts on the business key). Casts use strict=False so bad
-values become nulls — the data-quality rules then catch and quarantine them
+values become nulls - the data-quality rules then catch and quarantine them
 instead of the cast blowing up mid-pipeline.
 """
 

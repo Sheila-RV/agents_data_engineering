@@ -50,6 +50,8 @@ lakekeeper = ["pipeline/sql/*.sql", "pipeline/quality/rules/*.yml"]
 line-length = 100
 target-version = "py311"
 src = ["src", "tests"]
+# databricks/ holds illustrative notebooks that only run on Databricks (dlt, spark).
+extend-exclude = ["databricks"]
 
 [tool.ruff.lint]
 select = [

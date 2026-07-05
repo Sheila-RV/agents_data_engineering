@@ -1,9 +1,9 @@
-"""Supervisor: deterministic router with LLM-only-on-escalation.
+"""Supervisor: deterministic router, LLM only on escalation.
 
-The happy path is a fixed plan advanced in code — no LLM involved. The LLM is
-consulted exactly when something is off-plan: a worker left a pending_failure.
-Even then the action space is closed (retry / skip_step / abort) and the retry
-budget is enforced in code, so a confused model cannot loop the pipeline.
+The happy path is a fixed plan advanced in code, with no LLM involved. The LLM
+is consulted when a worker leaves a pending_failure. Even then the action space
+is closed (retry / skip_step / abort) and the retry budget is enforced in code,
+so the model cannot put the pipeline into a loop.
 """
 
 from lakekeeper.agents.context import AgentContext

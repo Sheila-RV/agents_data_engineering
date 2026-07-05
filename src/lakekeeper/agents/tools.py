@@ -1,9 +1,8 @@
-"""The boundary between agents and the deterministic pipeline.
+"""Boundary between the agents and the deterministic pipeline.
 
-Agent nodes may only touch the lake through these functions — thin, named
-wrappers over pipeline code. `pipeline/` never imports from `agents/`;
-this module is the one-way door in the other direction. Each function is the
-local equivalent of a "tool" an operator agent is allowed to use.
+Agent nodes only touch the lake through these functions (thin wrappers over
+pipeline code). The dependency is one-way: `pipeline/` never imports from
+`agents/`.
 """
 
 from pathlib import Path

@@ -1,4 +1,4 @@
-"""Full agent-graph runs with the mock decider — no API key needed anywhere."""
+"""Full agent-graph runs with the mock decider - no API key needed anywhere."""
 
 import json
 from pathlib import Path

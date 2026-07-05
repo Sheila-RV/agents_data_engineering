@@ -86,7 +86,7 @@ def run_with_agents(settings: Settings, run_date: date, console: Console | None 
     ctx = make_context(settings, console)
     ctx.console.print(
         f"[bold]agent mode[/bold]: {ctx.mode}"
-        + ("" if ctx.live else " (no API key or mock forced — deterministic mock policies)")
+        + ("" if ctx.live else " (no API key or mock forced - deterministic mock policies)")
     )
     graph = build_graph(ctx)
     initial: PipelineRunState = {
@@ -100,7 +100,7 @@ def run_with_agents(settings: Settings, run_date: date, console: Console | None 
     }
     final = graph.invoke(initial, config={"recursion_limit": 120})
 
-    # Persist the run ledger next to the report — the audit trail of the run.
+    # Persist the run ledger next to the report - the audit trail of the run.
     settings.reports_dir.mkdir(parents=True, exist_ok=True)
     ledger_path = settings.reports_dir / f"run_log_{final['run_id']}.json"
     ledger_path.write_text(

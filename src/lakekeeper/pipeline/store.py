@@ -49,7 +49,7 @@ class TableStore:
         df.write_delta(str(target), mode=mode, delta_write_options=options)
 
     def merge(self, layer: str, table: str, df: pl.DataFrame, *, key: str | list[str]) -> None:
-        """Upsert on a business key — the local equivalent of Databricks MERGE INTO."""
+        """Upsert on a business key - the local equivalent of Databricks MERGE INTO."""
         if not self.exists(layer, table):
             self.write(layer, table, df, mode="append")
             return

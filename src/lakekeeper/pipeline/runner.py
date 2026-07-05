@@ -1,6 +1,6 @@
 """Deterministic end-to-end pipeline run (no agents).
 
-This is the exact sequence the agent layer later supervises — same functions,
+This is the exact sequence the agent layer later supervises - same functions,
 fixed order, default quality policy (quarantine every error-severity failure),
 failing fast on anything unexpected.
 """
@@ -59,7 +59,7 @@ def run_deterministic(settings: Settings, run_date: date) -> RunSummary:
     files = bronze.list_landing_files(settings.landing_dir, f"{run_date:%Y%m%d}")
     if not files:
         raise FileNotFoundError(
-            f"no landing files for {run_date} in {settings.landing_dir} — "
+            f"no landing files for {run_date} in {settings.landing_dir} - "
             "run `lakekeeper generate` first"
         )
     for path in files:

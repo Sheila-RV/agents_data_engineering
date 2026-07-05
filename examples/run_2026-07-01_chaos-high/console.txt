@@ -4,9 +4,9 @@
   wrote data\landing\transactions_20260701.jsonl
   wrote data\landing\fx_rates_20260701.json
 ────────────────────── 2. run pipeline (agent-operated) ───────────────────────
-agent mode: mock (no API key or mock forced — deterministic mock policies)
+agent mode: mock (no API key or mock forced - deterministic mock policies)
   agent ingestion (mock) decided ingest_aligned -- mock policy: ingest aligned 
-to contract — missing columns become nulls that downstream DQ rules catch; 
+to contract - missing columns become nulls that downstream DQ rules catch; 
 bronze keeps raw lineage
   bronze accounts      +773 rows (accounts_20260701.csv)
   bronze customers     +500 rows (customers_20260701.csv)
@@ -47,8 +47,8 @@ amount_bob=786601.25
 6.45% vs threshold 1.5%
   agent validation (mock) decided pass_with_warnings -- mock policy: baseline 
 anomalies to review: max daily fraud-flag rate 6.45% vs threshold 1.5%
-  report written to data\lake\reports\report_run-20260701-a5002766_010659.md
-run run-20260701-a5002766 finished: done
+  report written to data\lake\reports\report_run-20260701-a4e9b2b2_013218.md
+run run-20260701-a4e9b2b2 finished: done
 ──────────────────────────────── 3. gold KPIs ─────────────────────────────────
                                 gold.kpi_daily                                 
 ┌──────┬─────┬──────┬─────┬──────┬─────┬──────┬─────┬──────┬─────┬──────┬─────┐

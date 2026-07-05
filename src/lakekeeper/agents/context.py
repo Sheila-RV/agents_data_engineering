@@ -82,6 +82,5 @@ class AgentContext:
         # Plain ASCII marker: emoji break Windows cp1252 consoles.
         self.console.print(
             f"  [magenta]agent[/magenta] [bold magenta]{agent}[/bold magenta] "
-            f"({mode}) decided [bold]{summary}[/bold]"
-            + (f" -- {rationale}" if rationale else "")
+            f"({mode}) decided [bold]{summary}[/bold]" + (f" -- {rationale}" if rationale else "")
         )

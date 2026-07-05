@@ -1,0 +1,30 @@
+# Databricks Asset Bundle job definition (illustrative).
+# The task DAG mirrors the local supervisor's happy-path plan; task retries mirror
+# the supervisor's code-enforced retry budget.
+resources:
+  jobs:
+    lakekeeper_daily:
+      name: lakekeeper-daily
+      schedule:
+        quartz_cron_expression: "0 0 6 * * ?"
+        timezone_id: America/La_Paz
+      email_notifications:
+        on_failure: [sheila.rojas@example.com]
+      tasks:
+        - task_key: bronze_ingest
+          notebook_task:
+            notebook_path: ../notebooks/01_bronze_autoloader.py
+          max_retries: 2
+        - task_key: silver_pipeline
+          depends_on: [{ task_key: bronze_ingest }]
+          pipeline_task:
+            pipeline_id: ${var.silver_pipeline_id} # Lakeflow declarative pipeline (02_silver)
+        - task_key: gold_models
+          depends_on: [{ task_key: silver_pipeline }]
+          notebook_task:
+            notebook_path: ../notebooks/03_gold_star_schema.sql
+          max_retries: 2
+        - task_key: reconcile_and_report
+          depends_on: [{ task_key: gold_models }]
+          notebook_task:
+            notebook_path: ../notebooks/04_reconciliation.py # ≙ local validation agent

@@ -1,9 +1,9 @@
-"""Structured decision schemas — the ONLY things the LLM is allowed to output.
+"""Structured decision schemas for agent escalations.
 
-Every agent decision is a Pydantic model with a closed Literal action space, so
-an agent can only ever pick between safe, pre-implemented actions; the code
-executes them. This bounded-decision design (instead of free-form tool-calling
-loops) is what keeps agent runs cheap, auditable and safe to demo.
+Every decision is a Pydantic model with a closed Literal action space: the LLM
+picks between pre-implemented actions and gives a rationale, and the code
+executes the choice. This keeps runs cheap and auditable compared to
+free-form tool-calling loops.
 """
 
 from typing import Literal
