@@ -38,3 +38,7 @@ rules:
     type: fail_when
     expr: "is_late"
     severity: warn
+  - id: fx_rate_missing
+    type: fail_when
+    expr: "amount_bob IS NULL AND amount IS NOT NULL"
+    severity: warn

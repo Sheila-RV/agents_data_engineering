@@ -57,8 +57,9 @@ def test_bad_rows_trigger_quality_decision(settings: Settings, landing_dir: Path
     assert "amount_positive" in final["report_md"]
 
 
-def test_schema_drift_is_skipped_and_run_continues(settings: Settings, landing_dir: Path) -> None:
-    # Rename a column in the accounts file: mock ingestion policy skips the file.
+def test_schema_drift_is_escalated_and_aligned(settings: Settings, landing_dir: Path) -> None:
+    # Rename a column in the accounts file: mock ingestion policy ingests it
+    # aligned to the contract (missing column becomes nulls).
     acc_file = landing_dir / "accounts_20260701.csv"
     content = acc_file.read_text(encoding="utf-8")
     acc_file.write_text(content.replace("account_type", "acct_type", 1), encoding="utf-8")
@@ -66,13 +67,25 @@ def test_schema_drift_is_skipped_and_run_continues(settings: Settings, landing_d
     final = run_with_agents(settings, RUN_DATE)
     drift_decisions = [d for d in final["decisions"] if d["agent"] == "ingestion"]
     assert len(drift_decisions) == 1
-    assert drift_decisions[0]["decision"]["action"] == "skip_file"
-    ingest_step = next(c for c in final["completed"] if c["step"] == "ingest")
-    assert ingest_step["skipped_files"] == ["accounts_20260701.csv"]
-    # No accounts in bronze => silver_accounts fails => supervisor retries, then aborts.
+    assert drift_decisions[0]["decision"]["action"] == "ingest_aligned"
+    assert drift_decisions[0]["context"]["missing_columns"] == ["account_type"]
+    assert final["status"] == "done"
+    store = TableStore(settings.lake_dir)
+    accounts = store.read("silver", "accounts")
+    assert accounts["account_type"].null_count() == accounts.height
+
+
+def test_broken_step_is_retried_then_aborted(settings: Settings, landing_dir: Path) -> None:
+    # An unparseable transactions file: ndjson read fails inside ingest ->
+    # pending_failure -> supervisor retries (twice), then aborts, still reporting.
+    txn_file = landing_dir / "transactions_20260701.jsonl"
+    txn_file.write_text("this is not json\n", encoding="utf-8")
+
+    final = run_with_agents(settings, RUN_DATE)
     assert final["status"] == "aborted"
     supervisor_decisions = [d for d in final["decisions"] if d["agent"] == "supervisor"]
-    assert supervisor_decisions, "supervisor should have handled the failure"
+    assert [d["decision"]["action"] for d in supervisor_decisions] == ["retry", "retry", "abort"]
+    assert final["retries_remaining"] == 0
     assert final["failures"][-1]["resolution"] == "abort"
     # Even aborted runs produce a report.
     assert final["report_md"] is not None

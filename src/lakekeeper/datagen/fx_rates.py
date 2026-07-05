@@ -38,8 +38,12 @@ def fetch_live_rates(rate_date: date) -> dict[str, float]:
         return rates_for_date(rate_date)
 
 
-def write_fx_landing_file(rate_date: date, landing_dir: Path, *, live: bool = False) -> Path:
+def write_fx_landing_file(
+    rate_date: date, landing_dir: Path, *, live: bool = False, drop_currency: str | None = None
+) -> Path:
     rates = fetch_live_rates(rate_date) if live else rates_for_date(rate_date)
+    if drop_currency:  # chaos: the provider "forgot" one currency today
+        rates.pop(drop_currency, None)
     payload = {"date": rate_date.isoformat(), "base": "BOB", "rates_to_bob": rates}
     path = landing_dir / f"fx_rates_{rate_date:%Y%m%d}.json"
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")

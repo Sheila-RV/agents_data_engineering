@@ -1,0 +1,1212 @@
+{
+  "run_id": "run-20260701-a5002766",
+  "run_date": "2026-07-01",
+  "status": "done",
+  "steps_completed": [
+    {
+      "step": "ingest",
+      "ingested": [
+        {
+          "file": "accounts_20260701.csv",
+          "table": "accounts",
+          "rows": 773,
+          "missing_columns": [
+            "status"
+          ],
+          "unexpected_columns": [
+            "estado"
+          ]
+        },
+        {
+          "file": "customers_20260701.csv",
+          "table": "customers",
+          "rows": 500,
+          "missing_columns": [],
+          "unexpected_columns": []
+        },
+        {
+          "file": "fx_rates_20260701.json",
+          "table": "fx_rates",
+          "rows": 2,
+          "missing_columns": [],
+          "unexpected_columns": []
+        },
+        {
+          "file": "transactions_20260701.jsonl",
+          "table": "transactions",
+          "rows": 5100,
+          "missing_columns": [],
+          "unexpected_columns": []
+        }
+      ],
+      "skipped_files": []
+    },
+    {
+      "step": "silver_fx_rates",
+      "table": "fx_rates",
+      "rows_in": 2,
+      "rows_out": 2,
+      "quarantined": 0
+    },
+    {
+      "step": "silver_customers",
+      "table": "customers",
+      "rows_in": 500,
+      "rows_out": 500,
+      "quarantined": 0
+    },
+    {
+      "step": "quality_customers",
+      "quarantined": 25
+    },
+    {
+      "step": "silver_accounts",
+      "table": "accounts",
+      "rows_in": 773,
+      "rows_out": 773,
+      "quarantined": 0
+    },
+    {
+      "step": "quality_accounts",
+      "quarantined": 37
+    },
+    {
+      "step": "silver_transactions",
+      "table": "transactions",
+      "rows_in": 5100,
+      "rows_out": 5000,
+      "quarantined": 0
+    },
+    {
+      "step": "quality_transactions",
+      "quarantined": 281
+    },
+    {
+      "step": "gold",
+      "models": {
+        "dim_account": 736,
+        "dim_customer": 475,
+        "dim_date": 6,
+        "fact_transactions": 4719,
+        "kpi_daily": 5
+      }
+    },
+    {
+      "step": "validate",
+      "verdict": "pass_with_warnings"
+    },
+    {
+      "step": "report",
+      "path": "data\\lake\\reports\\report_run-20260701-a5002766_010659.md"
+    }
+  ],
+  "dq_reports": [
+    {
+      "table": "silver.customers",
+      "total_rows": 500,
+      "passed": false,
+      "results": [
+        {
+          "rule_id": "customer_id_not_null",
+          "rule_type": "not_null",
+          "column": "customer_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 500,
+          "sample": []
+        },
+        {
+          "rule_id": "customer_id_unique",
+          "rule_type": "unique",
+          "column": "customer_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 500,
+          "sample": []
+        },
+        {
+          "rule_id": "doc_id_not_null",
+          "rule_type": "not_null",
+          "column": "doc_id",
+          "severity": "error",
+          "failed_rows": 25,
+          "total_rows": 500,
+          "sample": [
+            {
+              "customer_id": "CUST-00172",
+              "full_name": "Miriam Nogueira",
+              "doc_id": null,
+              "birth_date": "1963-02-14",
+              "city": "Oruro",
+              "segment": "premium",
+              "risk_rating": "low",
+              "created_at": "2023-10-22",
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "customer_id": "CUST-00145",
+              "full_name": "Sigfrido Rivera",
+              "doc_id": null,
+              "birth_date": "1984-09-08",
+              "city": "El Alto",
+              "segment": "retail",
+              "risk_rating": "low",
+              "created_at": "2025-02-20",
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "customer_id": "CUST-00440",
+              "full_name": "Trinidad Soriano Arranz",
+              "doc_id": null,
+              "birth_date": "1939-10-10",
+              "city": "Santa Cruz de la Sierra",
+              "segment": "business",
+              "risk_rating": "low",
+              "created_at": "2023-04-19",
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "customer_id": "CUST-00100",
+              "full_name": "Rosario Hurtado Lasa",
+              "doc_id": null,
+              "birth_date": "1977-04-20",
+              "city": "Tarija",
+              "segment": "retail",
+              "risk_rating": "low",
+              "created_at": "2023-01-31",
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "customer_id": "CUST-00276",
+              "full_name": "Tamara Tomas Campillo",
+              "doc_id": null,
+              "birth_date": "1957-03-11",
+              "city": "El Alto",
+              "segment": "retail",
+              "risk_rating": "low",
+              "created_at": "2018-09-30",
+              "_run_id": "run-20260701-a5002766"
+            }
+          ]
+        },
+        {
+          "rule_id": "birth_date_not_null",
+          "rule_type": "not_null",
+          "column": "birth_date",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 500,
+          "sample": []
+        },
+        {
+          "rule_id": "segment_allowed",
+          "rule_type": "allowed_values",
+          "column": "segment",
+          "severity": "warn",
+          "failed_rows": 0,
+          "total_rows": 500,
+          "sample": []
+        },
+        {
+          "rule_id": "risk_rating_allowed",
+          "rule_type": "allowed_values",
+          "column": "risk_rating",
+          "severity": "warn",
+          "failed_rows": 0,
+          "total_rows": 500,
+          "sample": []
+        }
+      ]
+    },
+    {
+      "table": "silver.accounts",
+      "total_rows": 773,
+      "passed": false,
+      "results": [
+        {
+          "rule_id": "account_id_not_null",
+          "rule_type": "not_null",
+          "column": "account_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 773,
+          "sample": []
+        },
+        {
+          "rule_id": "account_id_unique",
+          "rule_type": "unique",
+          "column": "account_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 773,
+          "sample": []
+        },
+        {
+          "rule_id": "customer_exists",
+          "rule_type": "foreign_key",
+          "column": "customer_id",
+          "severity": "error",
+          "failed_rows": 37,
+          "total_rows": 773,
+          "sample": [
+            {
+              "account_id": "ACC-000435",
+              "customer_id": "CUST-00276",
+              "account_type": "checking",
+              "currency": "BOB",
+              "opened_at": "2019-03-05",
+              "status": null,
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "account_id": "ACC-000739",
+              "customer_id": "CUST-00480",
+              "account_type": "checking",
+              "currency": "BOB",
+              "opened_at": "2021-04-29",
+              "status": null,
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "account_id": "ACC-000681",
+              "customer_id": "CUST-00440",
+              "account_type": "checking",
+              "currency": "BOB",
+              "opened_at": "2023-08-10",
+              "status": null,
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "account_id": "ACC-000579",
+              "customer_id": "CUST-00368",
+              "account_type": "checking",
+              "currency": "BOB",
+              "opened_at": "2025-02-09",
+              "status": null,
+              "_run_id": "run-20260701-a5002766"
+            },
+            {
+              "account_id": "ACC-000145",
+              "customer_id": "CUST-00094",
+              "account_type": "checking",
+              "currency": "BOB",
+              "opened_at": "2022-01-25",
+              "status": null,
+              "_run_id": "run-20260701-a5002766"
+            }
+          ]
+        },
+        {
+          "rule_id": "status_allowed",
+          "rule_type": "allowed_values",
+          "column": "status",
+          "severity": "warn",
+          "failed_rows": 0,
+          "total_rows": 773,
+          "sample": []
+        },
+        {
+          "rule_id": "currency_allowed",
+          "rule_type": "allowed_values",
+          "column": "currency",
+          "severity": "warn",
+          "failed_rows": 0,
+          "total_rows": 773,
+          "sample": []
+        }
+      ]
+    },
+    {
+      "table": "silver.transactions",
+      "total_rows": 5000,
+      "passed": false,
+      "results": [
+        {
+          "rule_id": "txn_id_not_null",
+          "rule_type": "not_null",
+          "column": "txn_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 5000,
+          "sample": []
+        },
+        {
+          "rule_id": "txn_id_unique",
+          "rule_type": "unique",
+          "column": "txn_id",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 5000,
+          "sample": []
+        },
+        {
+          "rule_id": "amount_not_null",
+          "rule_type": "not_null",
+          "column": "amount",
+          "severity": "error",
+          "failed_rows": 50,
+          "total_rows": 5000,
+          "sample": [
+            {
+              "txn_id": "TXN-20260701-003501",
+              "account_id": "ACC-000323",
+              "ts": "2026-07-01 08:02:01",
+              "amount": null,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "branch",
+              "counterparty": "Bartolom\u00e9 y Rosa S.A.D",
+              "merchant_category": "travel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-004106",
+              "account_id": "ACC-000587",
+              "ts": "2026-07-01 10:28:37",
+              "amount": null,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "branch",
+              "counterparty": "Miner\u00eda Fuertes y asociados S.C.P",
+              "merchant_category": "education",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-000324",
+              "account_id": "ACC-000066",
+              "ts": "2026-07-01 18:45:55",
+              "amount": null,
+              "currency": "USD",
+              "txn_type": "transfer_out",
+              "channel": "POS",
+              "counterparty": "F\u00e1brica Fern\u00e1ndez S.A.",
+              "merchant_category": "health",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-000058",
+              "account_id": "ACC-000025",
+              "ts": "2026-07-01 15:38:47",
+              "amount": null,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "POS",
+              "counterparty": "Valverde y Mercader S.L.",
+              "merchant_category": "education",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-002175",
+              "account_id": "ACC-000716",
+              "ts": "2026-07-01 11:50:14",
+              "amount": null,
+              "currency": "BOB",
+              "txn_type": "withdrawal",
+              "channel": "web",
+              "counterparty": "Industrias Gracia S.L.",
+              "merchant_category": "education",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            }
+          ]
+        },
+        {
+          "rule_id": "amount_positive",
+          "rule_type": "fail_when",
+          "column": null,
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 5000,
+          "sample": []
+        },
+        {
+          "rule_id": "currency_allowed",
+          "rule_type": "allowed_values",
+          "column": "currency",
+          "severity": "error",
+          "failed_rows": 0,
+          "total_rows": 5000,
+          "sample": []
+        },
+        {
+          "rule_id": "account_exists",
+          "rule_type": "foreign_key",
+          "column": "account_id",
+          "severity": "error",
+          "failed_rows": 233,
+          "total_rows": 5000,
+          "sample": [
+            {
+              "txn_id": "TXN-20260701-004373",
+              "account_id": "ACC-000708",
+              "ts": "2026-07-01 19:12:22",
+              "amount": 35.27,
+              "currency": "BOB",
+              "txn_type": "transfer_out",
+              "channel": "POS",
+              "counterparty": "Aroca y Ca\u00f1as S.L.L.",
+              "merchant_category": "education",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": 35.27
+            },
+            {
+              "txn_id": "TXN-20260701-003012",
+              "account_id": "ACC-000266",
+              "ts": "2026-07-01 11:31:09",
+              "amount": 476.04,
+              "currency": "BOB",
+              "txn_type": "deposit",
+              "channel": "web",
+              "counterparty": "Camps y Solera S.Coop.",
+              "merchant_category": "health",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": 476.04
+            },
+            {
+              "txn_id": "TXN-20260701-004162",
+              "account_id": "ACC-000481",
+              "ts": "2026-07-01 11:34:26",
+              "amount": 173.15,
+              "currency": "USD",
+              "txn_type": "withdrawal",
+              "channel": "web",
+              "counterparty": "Farmace\u00fatica Alberto & Asociados S.L.L.",
+              "merchant_category": "utilities",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-004019",
+              "account_id": "ACC-000739",
+              "ts": "2026-07-01 06:14:52",
+              "amount": 36.43,
+              "currency": "BOB",
+              "txn_type": "deposit",
+              "channel": "ATM",
+              "counterparty": "Camacho y Roldan S.A.",
+              "merchant_category": "other",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": 36.43
+            },
+            {
+              "txn_id": "TXN-20260701-000072",
+              "account_id": "ACC-000709",
+              "ts": "2026-07-01 19:03:05",
+              "amount": 471.84,
+              "currency": "BOB",
+              "txn_type": "transfer_out",
+              "channel": "POS",
+              "counterparty": "Miner\u00eda Carrasco S.A.",
+              "merchant_category": "other",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": 471.84
+            }
+          ]
+        },
+        {
+          "rule_id": "channel_allowed",
+          "rule_type": "allowed_values",
+          "column": "channel",
+          "severity": "warn",
+          "failed_rows": 0,
+          "total_rows": 5000,
+          "sample": []
+        },
+        {
+          "rule_id": "late_arrivals",
+          "rule_type": "fail_when",
+          "column": null,
+          "severity": "warn",
+          "failed_rows": 150,
+          "total_rows": 5000,
+          "sample": [
+            {
+              "txn_id": "TXN-20260701-001776",
+              "account_id": "ACC-000265",
+              "ts": "2026-06-29 20:20:45",
+              "amount": 26.35,
+              "currency": "BOB",
+              "txn_type": "transfer_out",
+              "channel": "POS",
+              "counterparty": "Dalila Abella Torres S.L.N.E",
+              "merchant_category": "restaurants",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-06-29",
+              "is_late": true,
+              "amount_bob": 26.35
+            },
+            {
+              "txn_id": "TXN-20260701-000024",
+              "account_id": "ACC-000365",
+              "ts": "2026-06-26 15:14:06",
+              "amount": 125.76,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "POS",
+              "counterparty": "Hotel Aznar y asociados S.A.",
+              "merchant_category": "travel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-06-26",
+              "is_late": true,
+              "amount_bob": 125.76
+            },
+            {
+              "txn_id": "TXN-20260701-003671",
+              "account_id": "ACC-000294",
+              "ts": "2026-06-28 09:47:19",
+              "amount": 17.89,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "web",
+              "counterparty": "Montes y Juli\u00e1 S.Coop.",
+              "merchant_category": "restaurants",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-06-28",
+              "is_late": true,
+              "amount_bob": 17.89
+            },
+            {
+              "txn_id": "TXN-20260701-004102",
+              "account_id": "ACC-000289",
+              "ts": "2026-06-29 11:50:22",
+              "amount": 75.07,
+              "currency": "BOB",
+              "txn_type": "payment",
+              "channel": "ATM",
+              "counterparty": "Distribuciones GUSC S.L.N.E",
+              "merchant_category": "travel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-06-29",
+              "is_late": true,
+              "amount_bob": 75.07
+            },
+            {
+              "txn_id": "TXN-20260701-001561",
+              "account_id": "ACC-000060",
+              "ts": "2026-06-26 10:23:03",
+              "amount": 49.89,
+              "currency": "USD",
+              "txn_type": "deposit",
+              "channel": "web",
+              "counterparty": "Distribuciones NTO S.Com.",
+              "merchant_category": "utilities",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-06-26",
+              "is_late": true,
+              "amount_bob": null
+            }
+          ]
+        },
+        {
+          "rule_id": "fx_rate_missing",
+          "rule_type": "fail_when",
+          "column": null,
+          "severity": "warn",
+          "failed_rows": 937,
+          "total_rows": 5000,
+          "sample": [
+            {
+              "txn_id": "TXN-20260701-000320",
+              "account_id": "ACC-000675",
+              "ts": "2026-07-01 17:50:02",
+              "amount": 788.02,
+              "currency": "USD",
+              "txn_type": "transfer_out",
+              "channel": "ATM",
+              "counterparty": "Y\u00e1\u00f1ez y Riquelme S.L.N.E",
+              "merchant_category": "telecom",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-003434",
+              "account_id": "ACC-000131",
+              "ts": "2026-07-01 14:02:20",
+              "amount": 80.17,
+              "currency": "USD",
+              "txn_type": "transfer_in",
+              "channel": "POS",
+              "counterparty": "Farmace\u00fatica Barriga & Asociados S.L.",
+              "merchant_category": "fuel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-002191",
+              "account_id": "ACC-000669",
+              "ts": "2026-07-01 07:25:37",
+              "amount": 206.36,
+              "currency": "USD",
+              "txn_type": "transfer_out",
+              "channel": "ATM",
+              "counterparty": "Suarez & Asociados S.L.",
+              "merchant_category": "travel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-002772",
+              "account_id": "ACC-000399",
+              "ts": "2026-07-01 19:32:23",
+              "amount": 106.75,
+              "currency": "USD",
+              "txn_type": "deposit",
+              "channel": "web",
+              "counterparty": "Arsenio Lu\u00eds M\u00e9ndez S.A.",
+              "merchant_category": "other",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            },
+            {
+              "txn_id": "TXN-20260701-004732",
+              "account_id": "ACC-000486",
+              "ts": "2026-07-01 18:13:55",
+              "amount": 27.23,
+              "currency": "USD",
+              "txn_type": "transfer_in",
+              "channel": "web",
+              "counterparty": "Valenciano & Asociados S.L.",
+              "merchant_category": "travel",
+              "is_flagged": false,
+              "_run_id": "run-20260701-a5002766",
+              "event_date": "2026-07-01",
+              "is_late": false,
+              "amount_bob": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "agent": "ingestion",
+      "step": "ingest",
+      "schema": "DriftDecision",
+      "mode": "mock",
+      "context": {
+        "file": "accounts_20260701.csv",
+        "table": "accounts",
+        "rows": 773,
+        "missing_columns": [
+          "status"
+        ],
+        "unexpected_columns": [
+          "estado"
+        ]
+      },
+      "decision": {
+        "action": "ingest_aligned",
+        "rationale": "mock policy: ingest aligned to contract \u2014 missing columns become nulls that downstream DQ rules catch; bronze keeps raw lineage"
+      }
+    },
+    {
+      "agent": "quality",
+      "step": "quality_customers",
+      "schema": "QualityDecision",
+      "mode": "mock",
+      "context": {
+        "table": "silver.customers",
+        "total_rows": 500,
+        "failed_rules": [
+          {
+            "rule_id": "doc_id_not_null",
+            "rule_type": "not_null",
+            "column": "doc_id",
+            "failed_rows": 25,
+            "total_rows": 500,
+            "sample_offending_rows": [
+              {
+                "customer_id": "CUST-00172",
+                "full_name": "Miriam Nogueira",
+                "doc_id": null,
+                "birth_date": "1963-02-14",
+                "city": "Oruro",
+                "segment": "premium",
+                "risk_rating": "low",
+                "created_at": "2023-10-22",
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "customer_id": "CUST-00145",
+                "full_name": "Sigfrido Rivera",
+                "doc_id": null,
+                "birth_date": "1984-09-08",
+                "city": "El Alto",
+                "segment": "retail",
+                "risk_rating": "low",
+                "created_at": "2025-02-20",
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "customer_id": "CUST-00440",
+                "full_name": "Trinidad Soriano Arranz",
+                "doc_id": null,
+                "birth_date": "1939-10-10",
+                "city": "Santa Cruz de la Sierra",
+                "segment": "business",
+                "risk_rating": "low",
+                "created_at": "2023-04-19",
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "customer_id": "CUST-00100",
+                "full_name": "Rosario Hurtado Lasa",
+                "doc_id": null,
+                "birth_date": "1977-04-20",
+                "city": "Tarija",
+                "segment": "retail",
+                "risk_rating": "low",
+                "created_at": "2023-01-31",
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "customer_id": "CUST-00276",
+                "full_name": "Tamara Tomas Campillo",
+                "doc_id": null,
+                "birth_date": "1957-03-11",
+                "city": "El Alto",
+                "segment": "retail",
+                "risk_rating": "low",
+                "created_at": "2018-09-30",
+                "_run_id": "run-20260701-a5002766"
+              }
+            ]
+          }
+        ]
+      },
+      "decision": {
+        "actions": [
+          {
+            "rule_id": "doc_id_not_null",
+            "action": "quarantine",
+            "rationale": "mock policy: quarantine every error-severity failure"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "quality",
+      "step": "quality_accounts",
+      "schema": "QualityDecision",
+      "mode": "mock",
+      "context": {
+        "table": "silver.accounts",
+        "total_rows": 773,
+        "failed_rules": [
+          {
+            "rule_id": "customer_exists",
+            "rule_type": "foreign_key",
+            "column": "customer_id",
+            "failed_rows": 37,
+            "total_rows": 773,
+            "sample_offending_rows": [
+              {
+                "account_id": "ACC-000435",
+                "customer_id": "CUST-00276",
+                "account_type": "checking",
+                "currency": "BOB",
+                "opened_at": "2019-03-05",
+                "status": null,
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "account_id": "ACC-000739",
+                "customer_id": "CUST-00480",
+                "account_type": "checking",
+                "currency": "BOB",
+                "opened_at": "2021-04-29",
+                "status": null,
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "account_id": "ACC-000681",
+                "customer_id": "CUST-00440",
+                "account_type": "checking",
+                "currency": "BOB",
+                "opened_at": "2023-08-10",
+                "status": null,
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "account_id": "ACC-000579",
+                "customer_id": "CUST-00368",
+                "account_type": "checking",
+                "currency": "BOB",
+                "opened_at": "2025-02-09",
+                "status": null,
+                "_run_id": "run-20260701-a5002766"
+              },
+              {
+                "account_id": "ACC-000145",
+                "customer_id": "CUST-00094",
+                "account_type": "checking",
+                "currency": "BOB",
+                "opened_at": "2022-01-25",
+                "status": null,
+                "_run_id": "run-20260701-a5002766"
+              }
+            ]
+          }
+        ]
+      },
+      "decision": {
+        "actions": [
+          {
+            "rule_id": "customer_exists",
+            "action": "quarantine",
+            "rationale": "mock policy: quarantine every error-severity failure"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "quality",
+      "step": "quality_transactions",
+      "schema": "QualityDecision",
+      "mode": "mock",
+      "context": {
+        "table": "silver.transactions",
+        "total_rows": 5000,
+        "failed_rules": [
+          {
+            "rule_id": "amount_not_null",
+            "rule_type": "not_null",
+            "column": "amount",
+            "failed_rows": 50,
+            "total_rows": 5000,
+            "sample_offending_rows": [
+              {
+                "txn_id": "TXN-20260701-003501",
+                "account_id": "ACC-000323",
+                "ts": "2026-07-01 08:02:01",
+                "amount": null,
+                "currency": "BOB",
+                "txn_type": "payment",
+                "channel": "branch",
+                "counterparty": "Bartolom\u00e9 y Rosa S.A.D",
+                "merchant_category": "travel",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              },
+              {
+                "txn_id": "TXN-20260701-004106",
+                "account_id": "ACC-000587",
+                "ts": "2026-07-01 10:28:37",
+                "amount": null,
+                "currency": "BOB",
+                "txn_type": "payment",
+                "channel": "branch",
+                "counterparty": "Miner\u00eda Fuertes y asociados S.C.P",
+                "merchant_category": "education",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              },
+              {
+                "txn_id": "TXN-20260701-000324",
+                "account_id": "ACC-000066",
+                "ts": "2026-07-01 18:45:55",
+                "amount": null,
+                "currency": "USD",
+                "txn_type": "transfer_out",
+                "channel": "POS",
+                "counterparty": "F\u00e1brica Fern\u00e1ndez S.A.",
+                "merchant_category": "health",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              },
+              {
+                "txn_id": "TXN-20260701-000058",
+                "account_id": "ACC-000025",
+                "ts": "2026-07-01 15:38:47",
+                "amount": null,
+                "currency": "BOB",
+                "txn_type": "payment",
+                "channel": "POS",
+                "counterparty": "Valverde y Mercader S.L.",
+                "merchant_category": "education",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              },
+              {
+                "txn_id": "TXN-20260701-002175",
+                "account_id": "ACC-000716",
+                "ts": "2026-07-01 11:50:14",
+                "amount": null,
+                "currency": "BOB",
+                "txn_type": "withdrawal",
+                "channel": "web",
+                "counterparty": "Industrias Gracia S.L.",
+                "merchant_category": "education",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              }
+            ]
+          },
+          {
+            "rule_id": "account_exists",
+            "rule_type": "foreign_key",
+            "column": "account_id",
+            "failed_rows": 233,
+            "total_rows": 5000,
+            "sample_offending_rows": [
+              {
+                "txn_id": "TXN-20260701-004373",
+                "account_id": "ACC-000708",
+                "ts": "2026-07-01 19:12:22",
+                "amount": 35.27,
+                "currency": "BOB",
+                "txn_type": "transfer_out",
+                "channel": "POS",
+                "counterparty": "Aroca y Ca\u00f1as S.L.L.",
+                "merchant_category": "education",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": 35.27
+              },
+              {
+                "txn_id": "TXN-20260701-003012",
+                "account_id": "ACC-000266",
+                "ts": "2026-07-01 11:31:09",
+                "amount": 476.04,
+                "currency": "BOB",
+                "txn_type": "deposit",
+                "channel": "web",
+                "counterparty": "Camps y Solera S.Coop.",
+                "merchant_category": "health",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": 476.04
+              },
+              {
+                "txn_id": "TXN-20260701-004162",
+                "account_id": "ACC-000481",
+                "ts": "2026-07-01 11:34:26",
+                "amount": 173.15,
+                "currency": "USD",
+                "txn_type": "withdrawal",
+                "channel": "web",
+                "counterparty": "Farmace\u00fatica Alberto & Asociados S.L.L.",
+                "merchant_category": "utilities",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": null
+              },
+              {
+                "txn_id": "TXN-20260701-004019",
+                "account_id": "ACC-000739",
+                "ts": "2026-07-01 06:14:52",
+                "amount": 36.43,
+                "currency": "BOB",
+                "txn_type": "deposit",
+                "channel": "ATM",
+                "counterparty": "Camacho y Roldan S.A.",
+                "merchant_category": "other",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": 36.43
+              },
+              {
+                "txn_id": "TXN-20260701-000072",
+                "account_id": "ACC-000709",
+                "ts": "2026-07-01 19:03:05",
+                "amount": 471.84,
+                "currency": "BOB",
+                "txn_type": "transfer_out",
+                "channel": "POS",
+                "counterparty": "Miner\u00eda Carrasco S.A.",
+                "merchant_category": "other",
+                "is_flagged": false,
+                "_run_id": "run-20260701-a5002766",
+                "event_date": "2026-07-01",
+                "is_late": false,
+                "amount_bob": 471.84
+              }
+            ]
+          }
+        ]
+      },
+      "decision": {
+        "actions": [
+          {
+            "rule_id": "amount_not_null",
+            "action": "quarantine",
+            "rationale": "mock policy: quarantine every error-severity failure"
+          },
+          {
+            "rule_id": "account_exists",
+            "action": "quarantine",
+            "rationale": "mock policy: quarantine every error-severity failure"
+          }
+        ]
+      }
+    },
+    {
+      "agent": "validation",
+      "step": "validate",
+      "schema": "ValidationVerdict",
+      "mode": "mock",
+      "context": {
+        "ok": false,
+        "checks": [
+          {
+            "name": "row_conservation_customers",
+            "ok": true,
+            "detail": "bronze distinct customer_id=500 vs silver=475 + quarantine=25"
+          },
+          {
+            "name": "row_conservation_accounts",
+            "ok": true,
+            "detail": "bronze distinct account_id=773 vs silver=736 + quarantine=37"
+          },
+          {
+            "name": "row_conservation_transactions",
+            "ok": true,
+            "detail": "bronze distinct txn_id=5000 vs silver=4719 + quarantine=281"
+          },
+          {
+            "name": "amount_conservation_fact",
+            "ok": true,
+            "detail": "silver amount_bob=786601.25 vs fact amount_bob=786601.25"
+          },
+          {
+            "name": "fact_no_orphans",
+            "ok": true,
+            "detail": "0 facts without customer"
+          },
+          {
+            "name": "fraud_rate_baseline",
+            "ok": false,
+            "detail": "max daily fraud-flag rate 6.45% vs threshold 1.5%"
+          }
+        ],
+        "mismatches": [
+          {
+            "name": "fraud_rate_baseline",
+            "detail": "max daily fraud-flag rate 6.45% vs threshold 1.5%"
+          }
+        ],
+        "quarantined_total": 343
+      },
+      "decision": {
+        "verdict": "pass_with_warnings",
+        "explanation": "mock policy: baseline anomalies to review: max daily fraud-flag rate 6.45% vs threshold 1.5%"
+      }
+    }
+  ],
+  "failures": [],
+  "quarantined_total": 343,
+  "reconciliation": {
+    "ok": false,
+    "checks": [
+      {
+        "name": "row_conservation_customers",
+        "ok": true,
+        "detail": "bronze distinct customer_id=500 vs silver=475 + quarantine=25"
+      },
+      {
+        "name": "row_conservation_accounts",
+        "ok": true,
+        "detail": "bronze distinct account_id=773 vs silver=736 + quarantine=37"
+      },
+      {
+        "name": "row_conservation_transactions",
+        "ok": true,
+        "detail": "bronze distinct txn_id=5000 vs silver=4719 + quarantine=281"
+      },
+      {
+        "name": "amount_conservation_fact",
+        "ok": true,
+        "detail": "silver amount_bob=786601.25 vs fact amount_bob=786601.25"
+      },
+      {
+        "name": "fact_no_orphans",
+        "ok": true,
+        "detail": "0 facts without customer"
+      },
+      {
+        "name": "fraud_rate_baseline",
+        "ok": false,
+        "detail": "max daily fraud-flag rate 6.45% vs threshold 1.5%"
+      }
+    ]
+  },
+  "verdict": {
+    "verdict": "pass_with_warnings",
+    "explanation": "mock policy: baseline anomalies to review: max daily fraud-flag rate 6.45% vs threshold 1.5%"
+  }
+}

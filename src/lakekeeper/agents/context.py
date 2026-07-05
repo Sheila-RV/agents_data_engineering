@@ -1,5 +1,6 @@
 """Shared context threaded through all agent nodes."""
 
+import traceback
 from dataclasses import dataclass
 
 from pydantic import BaseModel
@@ -8,6 +9,27 @@ from rich.console import Console
 from lakekeeper.agents.llm import BudgetExceededError, LiveDecider, MockDecider
 from lakekeeper.config import Settings
 from lakekeeper.pipeline.store import TableStore
+
+
+def failsafe(node):
+    """Wrap a worker node so any exception becomes a pending_failure for the
+    supervisor to triage (retry / skip_step / abort) instead of killing the graph."""
+
+    def wrapper(state):
+        try:
+            return node(state)
+        except Exception as exc:
+            step = state["plan"][0] if state.get("plan") else "unknown"
+            return {
+                "pending_failure": {
+                    "step": step,
+                    "error": type(exc).__name__,
+                    "message": str(exc)[:500],
+                    "traceback_tail": traceback.format_exc(limit=3)[-1500:],
+                }
+            }
+
+    return wrapper
 
 
 @dataclass
@@ -57,7 +79,9 @@ class AgentContext:
         if summary is None and hasattr(decision, "actions"):  # QualityDecision
             summary = ", ".join(f"{a.rule_id}->{a.action}" for a in decision.actions)
             rationale = ""
+        # Plain ASCII marker: emoji break Windows cp1252 consoles.
         self.console.print(
-            f"  [magenta]:robot: {agent}[/magenta] [{mode}] decided [bold]{summary}[/bold]"
-            + (f" — {rationale}" if rationale else "")
+            f"  [magenta]agent[/magenta] [bold magenta]{agent}[/bold magenta] "
+            f"({mode}) decided [bold]{summary}[/bold]"
+            + (f" -- {rationale}" if rationale else "")
         )

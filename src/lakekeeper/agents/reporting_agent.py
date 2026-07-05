@@ -75,7 +75,8 @@ def _template_report(ledger: dict) -> str:
                 or ", ".join(f"{a['rule_id']}->{a['action']}" for a in decision.get("actions", []))
             )
             rationale = decision.get("rationale") or decision.get("explanation") or ""
-            lines.append(f"- **{d['agent']}** ({d['mode']}): {summary} — {rationale}")
+            suffix = f" — {rationale}" if rationale else ""
+            lines.append(f"- **{d['agent']}** ({d['mode']}): {summary}{suffix}")
     if ledger["failures"]:
         lines += ["", "## Failures", ""]
         lines += [f"- `{f['step']}`: {f['error']} — {f['message']}" for f in ledger["failures"]]
@@ -85,7 +86,9 @@ def _template_report(ledger: dict) -> str:
 
 def make_node(ctx: AgentContext):
     def report(state: PipelineRunState) -> dict:
+        final_status = "aborted" if state.get("status") == "aborted" else "done"
         ledger = _ledger(state)
+        ledger["status"] = final_status
         writer = ctx.live_cheap
         if writer is not None:
             try:
@@ -107,7 +110,7 @@ def make_node(ctx: AgentContext):
             "plan": [],
             "report_md": report_md,
             "report_path": str(report_path),
-            "status": "aborted" if state.get("status") == "aborted" else "done",
+            "status": final_status,
             "completed": [{"step": "report", "path": str(report_path)}],
         }
 

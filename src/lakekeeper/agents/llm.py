@@ -66,8 +66,11 @@ class MockDecider:
             )
         if schema is DriftDecision:
             return DriftDecision(
-                action="skip_file",
-                rationale="mock policy: hold drifted files out of bronze for manual review",
+                action="ingest_aligned",
+                rationale=(
+                    "mock policy: ingest aligned to contract — missing columns become "
+                    "nulls that downstream DQ rules catch; bronze keeps raw lineage"
+                ),
             )
         if schema is ValidationVerdict:
             mismatches = context.get("mismatches", [])

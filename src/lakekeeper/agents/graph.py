@@ -21,7 +21,7 @@ from lakekeeper.agents import (
     transform_agent,
     validation_agent,
 )
-from lakekeeper.agents.context import AgentContext
+from lakekeeper.agents.context import AgentContext, failsafe
 from lakekeeper.agents.llm import make_deciders
 from lakekeeper.agents.state import PipelineRunState
 from lakekeeper.config import Settings
@@ -45,10 +45,10 @@ HAPPY_PATH = [
 def build_graph(ctx: AgentContext):
     builder = StateGraph(PipelineRunState)
     builder.add_node("supervisor", supervisor.make_node(ctx))
-    builder.add_node("ingestion", ingestion_agent.make_node(ctx))
-    builder.add_node("transform", transform_agent.make_node(ctx))
-    builder.add_node("quality", quality_agent.make_node(ctx))
-    builder.add_node("validation", validation_agent.make_node(ctx))
+    builder.add_node("ingestion", failsafe(ingestion_agent.make_node(ctx)))
+    builder.add_node("transform", failsafe(transform_agent.make_node(ctx)))
+    builder.add_node("quality", failsafe(quality_agent.make_node(ctx)))
+    builder.add_node("validation", failsafe(validation_agent.make_node(ctx)))
     builder.add_node("reporting", reporting_agent.make_node(ctx))
 
     builder.add_edge(START, "supervisor")

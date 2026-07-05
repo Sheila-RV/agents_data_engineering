@@ -163,5 +163,12 @@ def generate_landing_files(
     with paths[2].open("w", encoding="utf-8") as f:
         for row in transactions.iter_rows(named=True):
             f.write(json.dumps(row, ensure_ascii=False) + "\n")
-    paths.append(write_fx_landing_file(run_date, landing_dir, live=live_fx))
+    paths.append(
+        write_fx_landing_file(
+            run_date,
+            landing_dir,
+            live=live_fx,
+            drop_currency="USD" if chaos == "high" else None,
+        )
+    )
     return paths
